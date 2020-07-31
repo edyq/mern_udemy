@@ -1,8 +1,12 @@
 // bring up the express server and let it run
 
 const express = require('express');
+const connectDB = require('./config/db');
 
 const app = express();
+
+// connect db
+connectDB()
 
 // create endpoint for connection testing
 app.get('/', (req, res) => res.send('API Running'));
