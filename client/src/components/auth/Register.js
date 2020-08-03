@@ -1,8 +1,13 @@
 import React, { Fragment, useState } from 'react';
-import axios from 'axios';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { setAlert } from '../../actions/alert';
+import { axios } from 'axios';
+import PropTypes from 'prop-types'
 
-const Register = () => {
+
+// what the fuck is props
+const Register = ({ setAlert }) => {
   // formData: the object that stores the data of the form
   // setFormData: the function that handels the state of the form
   const [formData, setFormData] = useState({
@@ -19,7 +24,7 @@ const Register = () => {
   const onSubmit = async e => {
     e.preventDefault();
     if (password !== password2) {
-      console.log('Password do not match')
+      setAlert('Password do not match', 'danger');
     } else {
       const newUser = {
         name,
@@ -100,4 +105,8 @@ const Register = () => {
   )
 };
 
-export default Register
+Register.propTypes = {
+  setAlert: PropTypes.func.isRequired
+};
+
+export default connect(null, { setAlert })(Register);
