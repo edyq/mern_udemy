@@ -1,16 +1,16 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { createProfile } from '../../actions/profile';
+import { createProfile, getCurrentProfile } from '../../actions/profile';
 import { withRouter, Link } from 'react-router-dom';
 
-const CreateProfile = ({ createProfile, history }) => {
+const EditProfile = ({ profile: { profile, loading }, createProfile, getCurrentProfile, history }) => {
   const [formData, setFormData] = useState({
     company: '',
     website: '',
     location: '',
     status: '',
-    skills: '', 
+    skills: '',
     githubusername: '',
     bio: '',
     twitter: '',
@@ -21,6 +21,25 @@ const CreateProfile = ({ createProfile, history }) => {
   });
 
   const [displaySocialInputs, toggleSocialInputs] = useState(false);
+
+  useEffect(() => {
+    getCurrentProfile();
+
+    setFormData({
+      company: loading || !profile.company ? '' : profile.company,
+      website: loading || !profile.website ? '' : profile.website,
+      location: loading || !profile.location ? '' : profile.location,
+      status: loading || !profile.status ? '' : profile.status,
+      skills: loading || !profile.skills ? '' : profile.skills,
+      githubusername: loading || !profile.githubusername ? '' : profile.githubusername,
+      bio: loading || !profile.bio ? '' : profile.bio,
+      twitter: loading || !profile.social ? '' : profile.social.twitter,
+      facebook: loading || !profile.social ? '' : profile.social.facebook,
+      linkedin: loading || !profile.social ? '' : profile.social.linkedin,
+      youtube: loading || !profile.social ? '' : profile.social.youtube,
+      instagram: loading || !profile.social ? '' : profile.social.instagram,
+    });
+  }, [loading]);
 
   const {
     company,
@@ -41,13 +60,13 @@ const CreateProfile = ({ createProfile, history }) => {
 
   const onSubmit = e => {
     e.preventDefault();
-    createProfile(formData, history);
+    createProfile(formData, history, true);
   }
 
   return (
     <Fragment>
       <h1 className="large text-primary">
-        Create Your Profile
+        Update Your Profile
       </h1>
       <p className="lead">
         <i className="fas fa-user"></i> Let's get some information to make your
@@ -68,33 +87,32 @@ const CreateProfile = ({ createProfile, history }) => {
             <option value="Other">Other</option>
           </select>
           <small className="form-text"
-            >Give us an idea of where you are at in your career</small
+          >Give us an idea of where you are at in your career</small
           >
         </div>
         <div className="form-group">
           <input type="text" placeholder="Company" name="company" value={company} onChange={e => onChange(e)} />
           <small className="form-text"
-            >Could be your own company or one you work for</small
+          >Could be your own company or one you work for</small
           >
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Website" name="website" value={website} onChange={e => onChange(e)}/>
+          <input type="text" placeholder="Website" name="website" value={website} onChange={e => onChange(e)} />
           <small className="form-text"
-            >Could be your own or a company website</small
+          >Could be your own or a company website</small
           >
         </div>
         <div className="form-group">
-          <input type="text" placeholder="Location" name="location" value={location} onChange={e => onChange(e)}/>
+          <input type="text" placeholder="Location" name="location" value={location} onChange={e => onChange(e)} />
           <small className="form-text"
-            >City & state suggested (eg. Boston, MA)</small
+          >City & state suggested (eg. Boston, MA)</small
           >
         </div>
         <div className="form-group">
-          <input type="text" placeholder="* Skills" name="skills" value={skills} onChange={e => onChange(e)}/>
-          <small className="form-text"
-            >Please use comma separated values (eg.
-            HTML,CSS,JavaScript,PHP)</small
-          >
+          <input type="text" placeholder="* Skills" name="skills" value={skills} onChange={e => onChange(e)} />
+          <small className="form-text">
+            Please use comma separated values (eg. HTML,CSS,JavaScript,PHP)
+          </small>
         </div>
         <div className="form-group">
           <input
@@ -104,7 +122,7 @@ const CreateProfile = ({ createProfile, history }) => {
             value={githubusername} onChange={e => onChange(e)}
           />
           <small className="form-text"
-            >If you want your latest repos and a Github link, include your
+          >If you want your latest repos and a Github link, include your
             username</small
           >
         </div>
@@ -151,11 +169,17 @@ const CreateProfile = ({ createProfile, history }) => {
         <Link className="btn btn-light my-1" to="/dashboard">Go Back</Link>
       </form>
     </Fragment>
-  )
-}
-
-CreateProfile.propTypes = {
-  createProfile: PropTypes.func.isRequired
+  );
 };
 
-export default connect(null, { createProfile })(withRouter(CreateProfile));
+EditProfile.propTypes = {
+  createProfile: PropTypes.func.isRequired,
+  profile: PropTypes.object.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
+};
+
+const mapStateToProps = state => ({
+  profile: state.profile
+});
+
+export default connect(mapStateToProps, { createProfile, getCurrentProfile })(withRouter(EditProfile));
